@@ -8,8 +8,39 @@ A simple monitoring dashboard built as containerized microservices:
 - **Kubernetes**: k3s/minikube/kind manifests included
 
 ## Architecture Diagram
-(Insert a simple diagram: frontend -> backend; backend returns JSON; both containerized, deployed to k8s namespace `monitor-app`. Use draw.io and add exported PNG to `/docs/architecture.png`.)
+┌─────────────────────────────────────────────────────────────┐
+│                     Kubernetes Cluster                       │
+│  ┌─────────────────────────────────────────────────────┐   │
+│  │                    Namespace: monitoring            │   │
+│  │                                                       │   │
+│  │  ┌──────────────────┐      ┌──────────────────┐    │   │
+│  │  │   Frontend Pod   │      │   Backend Pod    │    │   │
+│  │  │  (React/Nginx)   │◄────►│  (Node.js/Expr)  │    │   │
+│  │  │  Port: 80        │      │  Port: 3001      │    │   │
+│  │  │  Replicas: 2     │      │  Replicas: 2     │    │   │
+│  │  └──────────────────┘      └──────────────────┘    │   │
+│  │         ▲                          ▲                 │   │
+│  │         │                          │                 │   │
+│  │  ┌──────┴──────────┐      ┌───────┴──────────┐    │   │
+│  │  │ Frontend Svc    │      │  Backend Svc     │    │   │
+│  │  │ NodePort:30080  │      │  ClusterIP:3001  │    │   │
+│  │  └─────────────────┘      └──────────────────┘    │   │
+│  │                                                       │   │
+│  │  ┌────────────────────────────────────────────┐    │   │
+│  │  │           ConfigMap: app-config            │    │   │
+│  │  │  - BACKEND_URL, POLL_INTERVAL, etc.       │    │   │
+│  │  └────────────────────────────────────────────┘    │   │
+│  └─────────────────────────────────────────────────────┘   │
+└─────────────────────────────────────────────────────────────┘
 
+                            ▼
+┌─────────────────────────────────────────────────────────────┐
+│                    CI/CD Pipeline (Jenkins)                  │
+│                                                               │
+│  Webhook → Checkout → Lint → Test → Build → Push → Deploy   │
+│            ▼                              ▼                  │
+│    Jenkins Agent ─────────────────► K8s Cluster             │
+└─────────────────────────────────────────────────────────────┘
 ## Tech choices & reasoning
 - Python/Flask for backend: fast to prototype, small dependency footprint.
 - React + Vite for frontend: quick dev feedback and small production bundle.
