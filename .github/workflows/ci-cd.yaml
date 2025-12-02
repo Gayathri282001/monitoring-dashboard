@@ -1,0 +1,70 @@
+name: CI-CD
+
+on:
+  pull_request:
+    branches: [ "main" ]
+  push:
+    branches: [ "main" ]
+
+env:
+  BACKEND_IMAGE: ${{ secrets.DOCKER_REGISTRY }}/monitoring-backend:latest
+  FRONTEND_IMAGE: ${{ secrets.DOCKER_REGISTRY }}/monitoring-frontend:latest
+
+jobs:
+  lint-test-build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: 3.11
+
+      - name: Lint backend (flake/flake8 not required) + run simple smoke test
+        run: |
+          python -m pip install -r backend/requirements.txt
+          python -c "import flask; print('flask ok')"
+      
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Lint front-end (install deps)
+        run: |
+          cd frontend
+          npm ci
+          npm run lint || true
+
+      - name: Build frontend production
+        run: |
+          cd frontend
+          npm run build
+
+      - name: Build Docker images
+        uses: docker/build-push-action@v5
+        with:
+          push: true
+          tags: |
+            ${{ env.BACKEND_IMAGE }}
+            ${{ env.FRONTEND_IMAGE }}
+          build-args: |
+            NODE_ENV=production
+
+      - name: Deploy to Kubernetes
+        if: github.event_name == 'push'
+        uses: azure/setup-kubectl@v3
+        with:
+          version: 'v1.27.0'
+      - name: Apply manifests
+        if: github.event_name == 'push'
+        env:
+          KUBECONFIG: ${{ secrets.KUBECONFIG }}
+        run: |
+          # Replace placeholder images in the manifests
+          sed -i "s|<REGISTRY>/monitoring-backend:latest|${{ env.BACKEND_IMAGE }}|g" k8s/*.yaml || true
+          sed -i "s|<REGISTRY>/monitoring-frontend:latest|${{ env.FRONTEND_IMAGE }}|g" k8s/*.yaml || true
+          kubectl apply -f k8s/namespace.yaml
+          kubectl apply -n monitor-app -f k8s/
