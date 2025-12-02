@@ -10,30 +10,26 @@ A simple monitoring dashboard built as containerized microservices:
 ## Architecture Diagram
 
 ```
-┌─────────────────────────────────────────────────────────────┐
-│                     Kubernetes Cluster                       │
-│  ┌─────────────────────────────────────────────────────┐   │
-│  │                    Namespace: monitoring            │   │
-│  │                                                       │   │
+┌───────────────────────────────────────────────────────────┐
+│                     Kubernetes Cluster                    | 
+|  ┌────────────────────────────────────────────────────    │
+│  │                    Namespace: monitoring           │   │
+│  │                                                    │   │
 │  │  ┌──────────────────┐      ┌──────────────────┐    │   │
 │  │  │   Frontend Pod   │      │   Backend Pod    │    │   │
 │  │  │  (React/Nginx)   │◄────►│  (Node.js/Expr)  │    │   │
 │  │  │  Port: 80        │      │  Port: 3001      │    │   │
 │  │  │  Replicas: 2     │      │  Replicas: 2     │    │   │
 │  │  └──────────────────┘      └──────────────────┘    │   │
-│  │         ▲                          ▲                 │   │
-│  │         │                          │                 │   │
-│  │  ┌──────┴──────────┐      ┌───────┴──────────┐    │   │
-│  │  │ Frontend Svc    │      │  Backend Svc     │    │   │
-│  │  │ NodePort:30080  │      │  ClusterIP:3001  │    │   │
-│  │  └─────────────────┘      └──────────────────┘    │   │
-│  │                                                       │   │
-│  │  ┌────────────────────────────────────────────┐    │   │
-│  │  │           ConfigMap: app-config            │    │   │
-│  │  │  - BACKEND_URL, POLL_INTERVAL, etc.       │    │   │
-│  │  └────────────────────────────────────────────┘    │   │
-│  └─────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────┘
+│  │         ▲                          ▲               │   │
+│  │         │                          │               │   │
+│  │  ┌──────┴──────────┐      ┌───────┴──────────┐     │   │
+│  │  │ Frontend Svc    │      │  Backend Svc     │     │   │
+│  │  │ NodePort:30080  │      │  ClusterIP:3001  │     │   │
+│  │  └─────────────────┘      └──────────────────┘     │   │
+│  │                                                    │   │
+│  └────────────────────────────────────────────────────┘   │
+└───────────────────────────────────────────────────────────┘
 ## Tech choices & reasoning
 - Python/Flask for backend: fast to prototype, small dependency footprint.
 - React + Vite for frontend: quick dev feedback and small production bundle.
