@@ -63,7 +63,7 @@
 1. Start k3s / minikube / kind cluster.
 
 2. Build & push images to your registry(DockerHub) :
-   ```
+ ```bash
 docker build -t your-dockerhub-username/monitoring-backend:latest ./backend
 docker push your-dockerhub-username/monitoring-backend:latest
 docker build -t your-dockerhub-username/monitoring-frontend:latest ./frontend
