@@ -20,17 +20,17 @@ spec:
           image: <REGISTRY>/monitoring-backend:latest
           imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 5000
+            - containerPort: 3001
           readinessProbe:
             httpGet:
               path: /metrics
-              port: 5000
+              port: 3001
             initialDelaySeconds: 5
             periodSeconds: 10
           livenessProbe:
             httpGet:
               path: /metrics
-              port: 5000
+              port: 3001
             initialDelaySeconds: 20
             periodSeconds: 20
           resources:
