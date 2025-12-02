@@ -2,7 +2,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: monitoring-backend
-  namespace: monitor-app
+  namespace: monitoring
   labels:
     app: monitoring-backend
 spec:
