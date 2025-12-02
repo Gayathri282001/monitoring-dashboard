@@ -1,7 +1,7 @@
 # Monitoring Dashboard — DevOps Assignment
 
 # 1. Architecture Diagram
-
+ ```
 ┌───────────────────────────────────────────────────────────┐
 │                     Kubernetes Cluster                    | 
 |  ┌────────────────────────────────────────────────────    │
@@ -22,6 +22,7 @@
 │  │                                                    │   │
 │  └────────────────────────────────────────────────────┘   │
 └───────────────────────────────────────────────────────────┘
+ ```
 
 ## 2. Tech choices & reasoning
 
@@ -62,12 +63,12 @@
 1. Start k3s / minikube / kind cluster.
 
 2. Build & push images to your registry(DockerHub) :
-  
+   ```
 docker build -t your-dockerhub-username/monitoring-backend:latest ./backend
 docker push your-dockerhub-username/monitoring-backend:latest
 docker build -t your-dockerhub-username/monitoring-frontend:latest ./frontend
 docker push your-dockerhub-username/monitoring-frontend:latest
-
+ ```
 
 3. Apply manifests:
  ```bash
@@ -95,18 +96,18 @@ For assignment: run a self-hosted runner on your machine configured with kubectl
 How to run tests & lint locally
 
 # Backend:
-
+ ```
 python -m pip install -r backend/requirements.txt
 python -c "import flask; print('ok')"
 
-
+ ```
 # Frontend:
-
+ ```
 cd frontend
 npm ci
 npm run lint
 npm run build
-
+ ```
 # 5. How to access frontend/backend services:  
 
 Frontend: <NodeIP>:30080
@@ -116,15 +117,16 @@ Backend: <NodeIP>:3001/metrics
 # 6. How to view Logs & Troubleshooting:
 
 # Docker
+ ```
 Docker compose logs:
 docker-compose logs -f
-
+ ```
 # Kubernetes:
-
+ ```
 kubectl -n monitoring get pods,svc
 kubectl -n monitoring logs <pod-name>
 kubectl -n monitoring describe pod <pod-name>
-
+ ```
 # Common issues:
 
 ImagePullBackOff: ensure images exist in registry or loaded into local cluster.
