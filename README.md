@@ -10,14 +10,14 @@
 │  │  ┌──────────────────┐      ┌──────────────────┐    │   │
 │  │  │   Frontend Pod   │      │   Backend Pod    │    │   │
 │  │  │                  │◄────►│                  │    │   │
-│  │  │  Port: 80        │      │  Port: 3001      │    │   │
+│  │  │  Port: 80        │      │  Port: 5000      │    │   │
 │  │  │  Replicas: 2     │      │  Replicas: 2     │    │   │
 │  │  └──────────────────┘      └──────────────────┘    │   │
 │  │         ▲                          ▲               │   │
 │  │         │                          │               │   │
 │  │  ┌──────┴──────────┐      ┌───────┴──────────┐     │   │
 │  │  │ Frontend Svc    │      │  Backend Svc     │     │   │
-│  │  │ NodePort:30080  │      │  ClusterIP:3001  │     │   │
+│  │  │ NodePort:30080  │      │  ClusterIP:5000  │     │   │
 │  │  └─────────────────┘      └──────────────────┘     │   │
 │  │                                                    │   │
 │  └────────────────────────────────────────────────────┘   │
@@ -51,7 +51,7 @@
 
 3. Access: 
    1. Frontend: http://localhost:3000
-   2. Backend metrics: http://localhost:3001/metrics
+   2. Backend metrics: http://localhost:5000/metrics
 
 4. to stop the application:
    ```bash
@@ -112,7 +112,7 @@ npm run build
 
 Frontend: <NodeIP>:30080
 
-Backend: <NodeIP>:3001/metrics
+Backend: <NodeIP>:5000/metrics
 
 # 6. How to view Logs & Troubleshooting:
 
