@@ -70,14 +70,14 @@ docker push your-dockerhub-username/monitoring-frontend:latest
 
 
 3. Apply manifests:
-
+ ```bash
 kubectl apply -f k8s/namespace.yaml
 kubectl apply -n monitoring -f k8s/
 kubectl apply -f k8s/backend-deployment.yaml
 kubectl apply -f k8s/backend-service.yaml
 kubectl apply -f k8s/frontend-deployment.yaml
 kubectl apply -f k8s/frontend-service.yaml
-
+```
 4. Verify deployment
    ```bash
    kubectl get pods -n monitoring
