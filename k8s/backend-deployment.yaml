@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: <REGISTRY>/monitoring-backend:latest
+          image: our-dockerhub-username/monitoring-backend:latest
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3001
