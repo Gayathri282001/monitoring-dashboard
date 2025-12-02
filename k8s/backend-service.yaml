@@ -7,7 +7,7 @@ spec:
   selector:
     app: monitoring-backend
   ports:
-    - port: 3001
-      targetPort: 3001
+    - port: 5000
+      targetPort: 5000
       protocol: TCP
   type: ClusterIP
