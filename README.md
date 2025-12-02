@@ -1,12 +1,5 @@
 # Monitoring Dashboard — DevOps Assignment
 
-## Overview
-A simple monitoring dashboard built as containerized microservices:
-- **Backend**: Flask service exposing `/metrics` (simulated CPU, latency, errors + monotonic counter)
-- **Frontend**: React dashboard polling `/metrics` every 10s and rendering charts
-- **CI/CD**: GitHub Actions to lint, test, build images, push to registry and deploy to Kubernetes (instructions below)
-- **Kubernetes**: k3s/minikube/kind manifests included
-
 ## Architecture Diagram
 
 ```
@@ -17,7 +10,7 @@ A simple monitoring dashboard built as containerized microservices:
 │  │                                                    │   │
 │  │  ┌──────────────────┐      ┌──────────────────┐    │   │
 │  │  │   Frontend Pod   │      │   Backend Pod    │    │   │
-│  │  │  (React/Nginx)   │◄────►│  (Node.js/Expr)  │    │   │
+│  │  │                  │◄────►│                  │    │   │
 │  │  │  Port: 80        │      │  Port: 3001      │    │   │
 │  │  │  Replicas: 2     │      │  Replicas: 2     │    │   │
 │  │  └──────────────────┘      └──────────────────┘    │   │
@@ -31,55 +24,65 @@ A simple monitoring dashboard built as containerized microservices:
 │  └────────────────────────────────────────────────────┘   │
 └───────────────────────────────────────────────────────────┘
 ## Tech choices & reasoning
-- Python/Flask for backend: fast to prototype, small dependency footprint.
-- React + Vite for frontend: quick dev feedback and small production bundle.
-- Chart.js for plotting — simple and effective.
+
+- continer: nginx:stable-alpine(frontend),  python:3.11-slim(backend)
 - Docker multi-stage builds to keep images small.
 - k3s/minikube/kind — any local Kubernetes is supported.
 - GitHub Actions for CI/CD: free-tier, widely used.
+- CI/CD : Github Actions.
+- Registry: DockerHub
+- Why: Industry-standard automation server with powerful pipeline capabilities
 
 ## Local setup (Docker Compose)
-1. Build & start:
+
+**Prerequisites
+- Docker Desktop or Docker Engine (v20+)
+- kubectl (v1.28+)
+- k3s, minikube, or kind installed
+- Git
+1. Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd monitoring-dashboard
+
+2. Build & start:
    ```docker-compose up --build```
-2. Access: 
+
+3. Access: 
    1. Frontend: http://localhost:3000
-   2. Backend metrics: http://localhost:5000/metrics
+   2. Backend metrics: http://localhost:3001/metrics
 
-Kubernetes (local)
+4. to stop the application:
+   ```bash
+   docker-compose down
+     ```
 
-Start k3s / minikube / kind cluster.
+## Kubernetes (local)
 
-Build & push images to your registry (or load images into the local cluster):
+1. Start k3s / minikube / kind cluster.
 
-Docker Hub:
-
-docker build -t youruser/monitoring-backend:latest ./backend
-docker push youruser/monitoring-backend:latest
-docker build -t youruser/monitoring-frontend:latest ./frontend
-docker push youruser/monitoring-frontend:latest
-
-
-For kind:
-
-docker build -t monitoring-backend:latest ./backend
-kind load docker-image monitoring-backend:latest
+2. Build & push images to your registry(DockerHub) :
+  
+docker build -t your-dockerhub-username/monitoring-backend:latest ./backend
+docker push your-dockerhub-username/monitoring-backend:latest
+docker build -t your-dockerhub-username/monitoring-frontend:latest ./frontend
+docker push your-dockerhub-username/monitoring-frontend:latest
 
 
-Update k8s/*.yaml replacing <REGISTRY> with your image path.
-
-Apply manifests:
+3. Apply manifests:
 
 kubectl apply -f k8s/namespace.yaml
-kubectl apply -n monitor-app -f k8s/
+kubectl apply -n monitoring -f k8s/
+kubectl apply -f k8s/backend-deployment.yaml
+kubectl apply -f k8s/frontend-deployment.yaml
 
+4. Verify deployment
+   ```bash
+   kubectl get pods -n monitoring
+   kubectl get svc -n monitoring
+   ```
 
-Access:
-
-Frontend: <NodeIP>:30080
-
-Backend: <NodeIP>:30050/metrics
-
-CI/CD
+##  how to run the CI/CD pipeline:   
 
 Workflow location: .github/workflows/ci-cd.yml
 
@@ -95,14 +98,20 @@ python -m pip install -r backend/requirements.txt
 python -c "import flask; print('ok')"
 
 
-Frontend:
+# Frontend:
 
 cd frontend
 npm ci
 npm run lint
 npm run build
 
-Logs & Troubleshooting
+## How to access frontend/backend services:  
+
+Frontend: <NodeIP>:30080
+
+Backend: <NodeIP>:3001/metrics
+
+## How to view Logs & Troubleshooting:
 
 Docker compose logs:
 
@@ -111,9 +120,9 @@ docker-compose logs -f
 
 Kubernetes:
 
-kubectl -n monitor-app get pods,svc
-kubectl -n monitor-app logs <pod-name>
-kubectl -n monitor-app describe pod <pod-name>
+kubectl -n monitoring get pods,svc
+kubectl -n monitoring logs <pod-name>
+kubectl -n monitoring describe pod <pod-name>
 
 
 Common issues:
