@@ -67,4 +67,4 @@ jobs:
           sed -i "s|<REGISTRY>/monitoring-backend:latest|${{ env.BACKEND_IMAGE }}|g" k8s/*.yaml || true
           sed -i "s|<REGISTRY>/monitoring-frontend:latest|${{ env.FRONTEND_IMAGE }}|g" k8s/*.yaml || true
           kubectl apply -f k8s/namespace.yaml
-          kubectl apply -n monitor-app -f k8s/
+          kubectl apply -n monitoring -f k8s/
