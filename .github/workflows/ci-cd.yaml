@@ -2,9 +2,9 @@ name: CI-CD
 
 on:
   pull_request:
-    branches: [ "main" ]
+    branches: [ "master" ]
   push:
-    branches: [ "main" ]
+    branches: [ "master" ]
 
 env:
   BACKEND_IMAGE: ${{ secrets.DOCKER_REGISTRY }}/monitoring-backend:latest
