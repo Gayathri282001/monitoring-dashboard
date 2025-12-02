@@ -1,8 +1,7 @@
 # Monitoring Dashboard — DevOps Assignment
 
-## Architecture Diagram
+# 1. Architecture Diagram
 
-```
 ┌───────────────────────────────────────────────────────────┐
 │                     Kubernetes Cluster                    | 
 |  ┌────────────────────────────────────────────────────    │
@@ -23,7 +22,8 @@
 │  │                                                    │   │
 │  └────────────────────────────────────────────────────┘   │
 └───────────────────────────────────────────────────────────┘
-## Tech choices & reasoning
+
+## 2. Tech choices & reasoning
 
 - continer: nginx:stable-alpine(frontend),  python:3.11-slim(backend)
 - Docker multi-stage builds to keep images small.
@@ -33,7 +33,7 @@
 - Registry: DockerHub
 - Why: Industry-standard automation server with powerful pipeline capabilities
 
-## Local setup (Docker Compose)
+# 3. Local deployment (Docker Compose)
 
 **Prerequisites
 - Docker Desktop or Docker Engine (v20+)
@@ -57,7 +57,7 @@
    docker-compose down
      ```
 
-## Kubernetes (local)
+# Kubernetes (local):
 
 1. Start k3s / minikube / kind cluster.
 
@@ -74,7 +74,9 @@ docker push your-dockerhub-username/monitoring-frontend:latest
 kubectl apply -f k8s/namespace.yaml
 kubectl apply -n monitoring -f k8s/
 kubectl apply -f k8s/backend-deployment.yaml
+kubectl apply -f k8s/backend-service.yaml
 kubectl apply -f k8s/frontend-deployment.yaml
+kubectl apply -f k8s/frontend-service.yaml
 
 4. Verify deployment
    ```bash
@@ -82,7 +84,7 @@ kubectl apply -f k8s/frontend-deployment.yaml
    kubectl get svc -n monitoring
    ```
 
-##  how to run the CI/CD pipeline:   
+# 4.  how to run the CI/CD pipeline:   
 
 Workflow location: .github/workflows/ci-cd.yml
 
@@ -92,7 +94,7 @@ For assignment: run a self-hosted runner on your machine configured with kubectl
 
 How to run tests & lint locally
 
-Backend:
+# Backend:
 
 python -m pip install -r backend/requirements.txt
 python -c "import flask; print('ok')"
@@ -105,27 +107,25 @@ npm ci
 npm run lint
 npm run build
 
-## How to access frontend/backend services:  
+# 5. How to access frontend/backend services:  
 
 Frontend: <NodeIP>:30080
 
 Backend: <NodeIP>:3001/metrics
 
-## How to view Logs & Troubleshooting:
+# 6. How to view Logs & Troubleshooting:
 
+# Docker
 Docker compose logs:
-
 docker-compose logs -f
 
-
-Kubernetes:
+# Kubernetes:
 
 kubectl -n monitoring get pods,svc
 kubectl -n monitoring logs <pod-name>
 kubectl -n monitoring describe pod <pod-name>
 
-
-Common issues:
+# Common issues:
 
 ImagePullBackOff: ensure images exist in registry or loaded into local cluster.
 
